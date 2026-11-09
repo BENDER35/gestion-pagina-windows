@@ -1,0 +1,116 @@
+======================================================================
+TUTORIAL: RUNNING SCRIPTS AND MANAGING VIRTUAL MEMORY
+======================================================================
+
+This package contains a PowerShell script (.ps1) designed to
+automate the configuration of the Windows page file.
+
+----------------------------------------------------------------------
+1. HOW TO RUN UNSIGNED SCRIPTS (PowerShell)
+----------------------------------------------------------------------
+For security reasons, Windows blocks the execution of external
+scripts. For a systems or programming student, it is essential to
+understand Execution Policies.
+
+STEPS TO ENABLE EXECUTION:
+1. Right-click the Start button and select:
+   "Terminal (Administrator)" or "Windows PowerShell (Administrator)".
+2. Type the following command to see your current policy:
+   Get-ExecutionPolicy
+   (It will probably say 'Restricted').
+
+3. To allow execution of your own scripts, use:
+   Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+   * RemoteSigned: Allows locally created scripts without a signature.
+   * Scope CurrentUser: The change only affects your current user.
+
+4. Confirm with 'Y' (Yes) when prompted.
+
+Now you can run the script by right-clicking the file
+'GestionPagina.ps1' and choosing "Run with PowerShell".
+You can also double-click 'GestionPagina.cmd', which requests
+administrator privileges automatically.
+
+----------------------------------------------------------------------
+2. TECHNICAL EXPLANATION (For Future Professionals)
+----------------------------------------------------------------------
+- What is the Page File?: It is 'pagefile.sys'. It is disk space
+  that the OS uses as virtual RAM when physical RAM is full.
+- CIM/WMI: The script uses 'CIM' (Common Information Model) commands.
+  It is an industry standard for accessing system information and
+  making low-level configuration changes.
+- Programming Logic:
+  * Try/Catch: Used to catch errors. If something fails (e.g., permissions),
+    the script does not "explode"; it shows a friendly message.
+  * Switch: An efficient way to create menus by comparing a variable
+    against multiple options.
+  * Casting ([int]): We convert user input (which is text)
+    into an integer so the system accepts it.
+
+- New script functions:
+  * Get-InstalledRamGB: reads the physical RAM installed in the computer.
+  * Get-PageFileRecommendation: calculates the recommended page file
+    size based on RAM and the selected profile.
+  * Set-PageFileSizes: applies the minimum and maximum size to the system.
+  * Set-AutomaticPageFile: returns control to Windows.
+  * Get-Windows11BypassInfo: tries to detect whether Windows 11 was
+    installed bypassing the official requirements (TPM 2.0, Secure Boot, RAM).
+  * Show-CurrentPageFile: shows the current configuration and usage.
+
+----------------------------------------------------------------------
+3. MENU OPTIONS
+----------------------------------------------------------------------
+[A] Automatic calculation based on installed RAM
+    The script reads the computer's RAM and calculates a recommended
+    size. Before applying anything, it shows the result and asks for
+    confirmation.
+    Rules used (standard profile):
+      - Up to 4 GB RAM : minimum 1.5x RAM / maximum 3x RAM
+      - 4 to 8 GB      : minimum 1x RAM   / maximum 2x RAM
+      - 8 to 16 GB     : minimum 0.5x RAM (min. 4 GB) /
+                         maximum 1x RAM (min. 8 GB)
+      - 16 to 32 GB    : minimum 8 GB / maximum 0.5x RAM (min. 16 GB)
+      - More than 32 GB: minimum 8 GB / maximum 16 GB
+
+[M] Manual calculation by entering RAM
+    Allows you to manually enter the amount of RAM (in GB) and choose
+    the standard or Windows 11 requirements-bypass profile.
+    It is useful for calculating the page file of another computer or
+    if automatic detection is not correct. It then asks whether to apply
+    the result to the current computer.
+
+[I] Automatic management
+    Windows decides the page file size. This is the recommended option
+    for most computers.
+
+[W] Page file for Windows 11 with "requirements bypass"
+    Intended for computers that installed Windows 11 bypassing the
+    official requirements. It applies a more generous profile:
+      - Up to 4 GB RAM : minimum 1.5x RAM / maximum 3x RAM
+      - 4 to 8 GB      : minimum 1x RAM   / maximum 2x RAM
+      - 8 to 16 GB     : minimum 1x RAM   / maximum 1.5x RAM
+      - More than 16 GB: minimum 16 GB / maximum 32 GB
+    The script tries to detect TPM 2.0, Secure Boot and RAM below
+    4 GB to warn about possible unmet requirements. The CPU cannot be
+    reliably verified, so the warning is indicative.
+
+[V] View current configuration
+    Shows installed RAM, whether Windows manages the page file, the
+    configured sizes and current usage.
+
+[B] Manual configuration (minimum and maximum)
+    Allows you to directly enter the minimum and maximum size in MB.
+    This option already existed in the original script.
+
+NOTE: Changes to the page file require a restart.
+The script asks whether you want to restart when finished, instead of
+restarting automatically.
+
+----------------------------------------------------------------------
+4. SECURITY RECOMMENDATION
+----------------------------------------------------------------------
+When you finish working in your development environments, you can
+re-enable script blocking for security with:
+Set-ExecutionPolicy Restricted -Scope CurrentUser
+======================================================================

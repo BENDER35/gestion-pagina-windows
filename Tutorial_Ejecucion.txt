@@ -1,0 +1,114 @@
+======================================================================
+TUTORIAL: EJECUCIÓN DE SCRIPTS Y GESTIÓN DE MEMORIA VIRTUAL
+======================================================================
+
+Este paquete contiene un script de PowerShell (.ps1) diseñado para 
+automatizar la configuración del archivo de paginación en Windows.
+
+----------------------------------------------------------------------
+1. CÓMO EJECUTAR SCRIPTS NO FIRMADOS (PowerShell)
+----------------------------------------------------------------------
+Por seguridad, Windows bloquea la ejecución de scripts externos. Para 
+un estudiante de sistemas o programación, es fundamental entender las 
+políticas de ejecución (Execution Policies).
+
+PASOS PARA HABILITAR LA EJECUCIÓN:
+1. Haz clic derecho en el botón de Inicio y selecciona:
+   "Terminal (Administrador)" o "Windows PowerShell (Administrador)".
+2. Escribe el siguiente comando para ver tu política actual:
+   Get-ExecutionPolicy
+   (Probablemente dirá 'Restricted').
+
+3. Para permitir la ejecución de tus propios scripts, usa:
+   Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+   * RemoteSigned: Permite ejecutar scripts creados localmente sin firma.
+   * Scope CurrentUser: El cambio solo afecta a tu usuario actual.
+
+4. Confirma con 'S' (Sí) cuando se te pregunte.
+
+Ahora puedes ejecutar el script haciendo clic derecho sobre el archivo
+'GestionPagina.ps1' y eligiendo "Ejecutar con PowerShell".
+
+----------------------------------------------------------------------
+2. EXPLICACIÓN TÉCNICA (Para Futuros Profesionales)
+----------------------------------------------------------------------
+- ¿Qué es el Archivo de Paginación?: Es el 'pagefile.sys'. Es espacio 
+  en el disco duro que el SO usa como RAM virtual cuando la RAM física 
+  está llena.
+- CIM/WMI: El script utiliza comandos 'CIM' (Common Information Model). 
+  Es un estándar de la industria para acceder a información del sistema 
+  y realizar cambios de configuración a bajo nivel.
+- Lógica de Programación:
+  * Try/Catch: Se usa para capturar errores. Si algo falla (ej. permisos), 
+    el script no "explota", sino que muestra un mensaje amigable.
+  * Switch: Una forma eficiente de crear menús comparando una variable 
+    contra múltiples opciones.
+  * Casting ([int]): Convertimos la entrada del usuario (que es texto) 
+    en un número entero para que el sistema lo acepte.
+
+- Funciones nuevas del script:
+  * Get-InstalledRamGB: lee la RAM física instalada en el equipo.
+  * Get-PageFileRecommendation: calcula el tamaño recomendado del
+    archivo de paginación según la RAM y el perfil elegido.
+  * Set-PageFileSizes: aplica el tamaño mínimo y máximo al sistema.
+  * Set-AutomaticPageFile: devuelve el control a Windows.
+  * Get-Windows11BypassInfo: intenta detectar si Windows 11 se instaló
+    saltándose requisitos oficiales (TPM 2.0, Secure Boot, RAM).
+  * Show-CurrentPageFile: muestra la configuración y el uso actual.
+
+----------------------------------------------------------------------
+3. OPCIONES DEL MENÚ
+----------------------------------------------------------------------
+[A] Cálculo automático según la RAM instalada
+    El script lee la RAM del equipo y calcula un tamaño recomendado.
+    Antes de aplicar nada, muestra el resultado y pide confirmación.
+    Reglas usadas (perfil estándar):
+      - Hasta 4 GB de RAM : mínimo 1,5x RAM / máximo 3x RAM
+      - 4 a 8 GB          : mínimo 1x RAM   / máximo 2x RAM
+      - 8 a 16 GB         : mínimo 0,5x RAM (mín. 4 GB) /
+                            máximo 1x RAM (mín. 8 GB)
+      - 16 a 32 GB        : mínimo 8 GB / máximo 0,5x RAM (mín. 16 GB)
+      - Más de 32 GB      : mínimo 8 GB / máximo 16 GB
+
+[M] Cálculo manual introduciendo la RAM
+    Permite escribir manualmente la cantidad de RAM (en GB) y elegir
+    el perfil estándar o el de Windows 11 con salto de requisitos.
+    Es útil para calcular el pagefile de otro equipo o si la detección
+    automática no es correcta. Después pregunta si aplicar el resultado
+    al equipo actual.
+
+[I] Gestión automática
+    Windows decide el tamaño del archivo de paginación. Es la opción
+    recomendada para la mayoría de equipos.
+
+[W] Paginación para Windows 11 con "salto de requisitos"
+    Pensada para equipos que instalaron Windows 11 saltándose los
+    requisitos oficiales. Aplica un perfil más generoso:
+      - Hasta 4 GB de RAM : mínimo 1,5x RAM / máximo 3x RAM
+      - 4 a 8 GB          : mínimo 1x RAM   / máximo 2x RAM
+      - 8 a 16 GB         : mínimo 1x RAM   / máximo 1,5x RAM
+      - Más de 16 GB      : mínimo 16 GB / máximo 32 GB
+    El script intenta detectar TPM 2.0, Secure Boot y RAM inferior a
+    4 GB para avisar de posibles requisitos incumplidos. La CPU no se
+    puede verificar de forma fiable, por lo que el aviso es orientativo.
+
+[V] Ver configuración actual
+    Muestra la RAM instalada, si Windows gestiona el archivo de
+    paginación, los tamaños configurados y el uso actual.
+
+[B] Configuración manual (mínimo y máximo)
+    Permite introducir directamente el tamaño mínimo y máximo en MB.
+    Esta opción ya existía en el script original.
+
+NOTA: Los cambios en el archivo de paginación requieren reiniciar.
+El script pregunta si deseas reiniciar al terminar, en lugar de
+reiniciar automáticamente.
+
+----------------------------------------------------------------------
+4. RECOMENDACIÓN DE SEGURIDAD
+----------------------------------------------------------------------
+Cuando termines de trabajar en tus entornos de desarrollo, puedes 
+volver a bloquear la ejecución de scripts por seguridad con:
+Set-ExecutionPolicy Restricted -Scope CurrentUser
+======================================================================
