@@ -15,6 +15,8 @@ Unicode true
 Name "${APP_NAME}"
 OutFile "..\dist\GestionPagina_Setup_${APP_VERSION}.exe"
 
+; $PROGRAMFILES apunta a "Program Files (x86)" en Windows de 64 bits.
+; Es intencional para que el instalador funcione en 32 y 64 bits.
 InstallDir "$PROGRAMFILES\GestionPagina"
 InstallDirRegKey HKLM "Software\GestionPagina" "InstallDir"
 RequestExecutionLevel admin

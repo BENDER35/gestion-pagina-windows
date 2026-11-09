@@ -8,7 +8,9 @@ instalador incluido en este repositorio.
 
 El instalador resultante:
 
-- Copia el script y la documentación en `C:\Program Files\GestionPagina`.
+- Copia el script y la documentación en `C:\Program Files\GestionPagina`
+  (o `C:\Program Files (x86)\GestionPagina` en Windows de 64 bits, ya que
+  el instalador NSIS generado es de 32 bits).
 - Crea accesos directos en el menú Inicio y en el escritorio.
 - Crea un desinstalador.
 - Solicita privilegios de administrador mediante UAC.
@@ -125,7 +127,8 @@ El resultado se genera en `dist/GestionPagina_Setup_1.0.0.exe`.
 1. Descarga `GestionPagina_Setup_1.0.0.exe`.
 2. Haz doble clic.
 3. Acepta el aviso de UAC.
-4. Elige la carpeta de instalación (por defecto `C:\Program Files\GestionPagina`).
+4. Elige la carpeta de instalación (por defecto `C:\Program Files\GestionPagina`
+   o `C:\Program Files (x86)\GestionPagina` en Windows de 64 bits).
 5. Pulsa “Instalar”.
 6. Al terminar, puedes marcar “Ejecutar el Gestor de Paginación ahora”.
 7. También puedes abrirlo desde el menú Inicio o el escritorio.
@@ -214,8 +217,10 @@ lanzador `.cmd` y genera el autoextraíble.
   acepta el aviso.
 - **Antivirus marca el EXE**: es habitual en instaladores NSIS sin
   firmar. Añade una exclusión o firma el binario.
-- **Windows de 32 bits**: `$PROGRAMFILES64` no existe. Cambia
-  `InstallDir` a `$PROGRAMFILES\GestionPagina`.
+- **Windows de 32 bits**: el instalador usa `$PROGRAMFILES`, por lo que
+  funciona en 32 y 64 bits. En 64 bits se instala en
+  `Program Files (x86)`; si prefieres `Program Files`, cambia
+  `InstallDir` a `$PROGRAMFILES64` y compila un instalador de 64 bits.
 - **Rutas con espacios**: el lanzador usa `%~dp0` y comillas para
   soportar rutas como `C:\Program Files\...`.
 

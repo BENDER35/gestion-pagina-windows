@@ -8,7 +8,9 @@ in this repository was built.
 
 The resulting installer:
 
-- Copies the script and documentation to `C:\Program Files\GestionPagina`.
+- Copies the script and documentation to `C:\Program Files\GestionPagina`
+  (or `C:\Program Files (x86)\GestionPagina` on 64-bit Windows, because
+  the generated NSIS installer is 32-bit).
 - Creates Start Menu and Desktop shortcuts.
 - Creates an uninstaller.
 - Requests administrator privileges through UAC.
@@ -125,7 +127,8 @@ The result is written to `dist/GestionPagina_Setup_1.0.0.exe`.
 1. Download `GestionPagina_Setup_1.0.0.exe`.
 2. Double-click it.
 3. Accept the UAC prompt.
-4. Choose the installation folder (default: `C:\Program Files\GestionPagina`).
+4. Choose the installation folder (default: `C:\Program Files\GestionPagina`
+   or `C:\Program Files (x86)\GestionPagina` on 64-bit Windows).
 5. Click “Install”.
 6. When finished, you can check “Run the Page File Manager now”.
 7. You can also open it from the Start Menu or the Desktop.
@@ -212,8 +215,10 @@ launcher, and generate the self-extracting package.
   prompt.
 - **Antivirus flags the EXE**: common with unsigned NSIS installers. Add
   an exclusion or sign the binary.
-- **32-bit Windows**: `$PROGRAMFILES64` does not exist. Change
-  `InstallDir` to `$PROGRAMFILES\GestionPagina`.
+- **32-bit Windows**: the installer uses `$PROGRAMFILES`, so it works on
+  both 32-bit and 64-bit Windows. On 64-bit Windows it installs to
+  `Program Files (x86)`; if you prefer `Program Files`, change
+  `InstallDir` to `$PROGRAMFILES64` and build a 64-bit installer.
 - **Paths with spaces**: the launcher uses `%~dp0` and quotes to support
   paths such as `C:\Program Files\...`.
 
